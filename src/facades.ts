@@ -24,6 +24,9 @@ export const cfaSignIn = (providerId: string, data?: SignInOptions): Observable<
 	const googleProvider = new firebase.auth.GoogleAuthProvider().providerId;
 	const facebookProvider = new firebase.auth.FacebookAuthProvider().providerId;
 	const twitterProvider = new firebase.auth.TwitterAuthProvider().providerId;
+	// TODO: Figure out why this keeps throwing an error!
+	// Use this to get it to run locally until we figure out the `firebase.app()` error
+	// const phoneProvider = "phone";
 	const phoneProvider = new firebase.auth.PhoneAuthProvider().providerId;
 	const appleProvider = "apple.com";
 	switch (providerId) {
