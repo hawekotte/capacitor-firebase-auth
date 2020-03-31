@@ -45,15 +45,12 @@ class AppleProviderHandler: NSObject, ProviderHandler {
     }
 
     func fillResult(data: PluginResultData) -> PluginResultData {
-        // TODO
-        // Possibly need to add a special result from the `authResult` that comes from authentication below...
-        // OR see: https://github.com/htorbov/capacitor-apple-login/blob/master/ios/Plugin/Plugin.swift#L39-L46
-
         var jsResult: PluginResultData = [:]
         data.map { (key, value) in
             jsResult[key] = value
         }
 
+        // Attach values from the auth result from Appl sign-in
         jsResult["user"] = self.user
         jsResult["email"] = self.email
         jsResult["fullName"] = self.fullName
@@ -141,16 +138,13 @@ extension AppleProviderHandler: ASAuthorizationControllerDelegate {
       self.identityToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
       self.authorizationCode = String(data: appleIDCredential.authorizationCode!, encoding: .utf8)
 
-      //  print("APPLE ID TOKEN:")
-      //  print(self.identityToken)
-      //  print("NONCE:")
-      //  print(nonce)
       // Initialize a Firebase credential.
       let credential = OAuthProvider.credential(withProviderID: "apple.com",
                                                 idToken: idTokenString,
                                                 rawNonce: nonce)
-      // Sign in with Firebase.
-      self.plugin?.authenticate(credential: credential) // Use the methods provided by `CapacitorFirebaseAuth`
+
+      // Sign in with Firebase (using either the native layer or web layer depending upon values passed in from capacitor config)
+      self.plugin?.handleAuthCredentials(credential: credential)
     }
   }
 }

@@ -33,7 +33,6 @@ public class CapacitorFirebaseAuth: CAPPlugin {
         }
 
         for provider in self.providersNames {
-            print(provider)
             if ("google.com" == provider) {
                 self.providers["google.com"] = GoogleProviderHandler()
                 self.providers["google.com"]?.initialize(plugin: self)
