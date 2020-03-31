@@ -26,13 +26,14 @@ public class CapacitorFirebaseAuth: CAPPlugin {
         self.providersNames = self.getConfigValue("providers") as? [String] ?? []
         self.nativeAuth = self.getConfigValue("nativeAuth") as? Bool ?? false
         self.languageCode = self.getConfigValue("languageCode") as? String ?? "en"
-
+        
         if (FirebaseApp.app() == nil) {
             FirebaseApp.configure()
             Auth.auth().languageCode = self.languageCode;
         }
 
         for provider in self.providersNames {
+            print(provider)
             if ("google.com" == provider) {
                 self.providers["google.com"] = GoogleProviderHandler()
                 self.providers["google.com"]?.initialize(plugin: self)
@@ -113,12 +114,12 @@ public class CapacitorFirebaseAuth: CAPPlugin {
             }
 
             guard let callbackId = self.callbackId else {
-                print("Ops, there is no callbackId building result")
+                print("Oops, there is no callbackId building result")
                 return
             }
 
             guard self.bridge.getSavedCall(callbackId) != nil else {
-                print("Ops, there is no saved call building result")
+                print("Oops, there is no saved call building result")
                 return
             }
 
@@ -128,12 +129,12 @@ public class CapacitorFirebaseAuth: CAPPlugin {
 
     func buildResult() {
         guard let callbackId = self.callbackId else {
-            print("Ops, there is no callbackId building result")
+            print("Oops, there is no callbackId building result")
             return
         }
 
         guard let call = self.bridge.getSavedCall(callbackId) else {
-            print("Ops, there is no saved call building result")
+            print("Oops, there is no saved call building result")
             return
         }
 
@@ -153,12 +154,12 @@ public class CapacitorFirebaseAuth: CAPPlugin {
         print(message)
 
         guard let callbackId = self.callbackId else {
-            print("Ops, there is no callbackId handling error")
+            print("Oops, there is no callbackId handling error")
             return
         }
 
         guard let call = self.bridge.getSavedCall(callbackId) else {
-            print("Ops, there is no saved call handling error")
+            print("Oops, there is no saved call handling error")
             return
         }
 

@@ -1,42 +1,72 @@
 import Foundation
 import Capacitor
 import AuthenticationServices
+import CryptoKit
+import FirebaseCore
+import FirebaseAuth
+
 
 class AppleProviderHandler: NSObject, ProviderHandler {
     var plugin: CapacitorFirebaseAuth? = nil
-    // Unhashed nonce.
+    // Unhashed nonce
     fileprivate var currentNonce: String?
+    // Info
+    fileprivate var user: String?
+    fileprivate var email: String?
+    fileprivate var fullName: String?
+    fileprivate var identityToken: String?
+    fileprivate var authorizationCode: String?
 
     func initialize(plugin: CapacitorFirebaseAuth) {
         print("Initializing Apple Provider Handler")
         self.plugin = plugin
     }
 
-    @available(iOS 13, *)
+    // @available(iOS 13, *)
     func signIn(call: CAPPluginCall) {
-        let nonce = randomNonceString()
-        currentNonce = nonce
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.fullName, .email]
-        request.nonce = sha256(nonce)
+        if #available(iOS 13.0, *) {
+            let nonce = randomNonceString()
+            currentNonce = nonce
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
 
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            authorizationController.delegate = self
+            authorizationController.performRequests()
+        } else {
+            call.reject("Sign in with Apple is available on iOS 13.0+ only.")
+        }
     }
 
     func isAuthenticated() -> Bool {
         // TODO
+        return false
     }
 
     func fillResult(data: PluginResultData) -> PluginResultData {
         // TODO
+        // Possibly need to add a special result from the `authResult` that comes from authentication below...
+        // OR see: https://github.com/htorbov/capacitor-apple-login/blob/master/ios/Plugin/Plugin.swift#L39-L46
+
+        var jsResult: PluginResultData = [:]
+        data.map { (key, value) in
+            jsResult[key] = value
+        }
+
+        jsResult["user"] = self.user
+        jsResult["email"] = self.email
+        jsResult["fullName"] = self.fullName
+        jsResult["identityToken"] = self.identityToken
+        jsResult["authorizationCode"] = self.authorizationCode
+        jsResult["nonce"] = self.currentNonce
+        
+        return jsResult
     }
 
     func signOut(){
         // TODO
+        // Needed? Since apple doesn't provide a logout method?
     }
 
     @available(iOS 13, *)
@@ -85,7 +115,7 @@ class AppleProviderHandler: NSObject, ProviderHandler {
 }
 
 @available(iOS 13.0, *)
-extension MainViewController: ASAuthorizationControllerDelegate {
+extension AppleProviderHandler: ASAuthorizationControllerDelegate {
 
   func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
     if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
@@ -100,25 +130,32 @@ extension MainViewController: ASAuthorizationControllerDelegate {
         print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
         return
       }
+
+      let givenName = appleIDCredential.fullName?.givenName ?? ""
+
+      let familyName = appleIDCredential.fullName?.familyName ?? ""
+
+      self.user = appleIDCredential.user
+      self.email = appleIDCredential.email
+      self.fullName = givenName + " " + familyName
+      self.identityToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
+      self.authorizationCode = String(data: appleIDCredential.authorizationCode!, encoding: .utf8)
+
+      //  print("APPLE ID TOKEN:")
+      //  print(self.identityToken)
+      //  print("NONCE:")
+      //  print(nonce)
       // Initialize a Firebase credential.
       let credential = OAuthProvider.credential(withProviderID: "apple.com",
                                                 idToken: idTokenString,
                                                 rawNonce: nonce)
       // Sign in with Firebase.
-      Auth.auth().signIn(with: credential) { (authResult, error) in
-        if error {
-          // Error. If error.code == .MissingOrInvalidNonce, make sure
-          // you're sending the SHA256-hashed nonce as a hex string with
-          // your request to Apple.
-          print(error.localizedDescription)
-          return
-        }
-        // User is signed in to Firebase with Apple.
-        // ...
-      }
+      self.plugin?.authenticate(credential: credential) // Use the methods provided by `CapacitorFirebaseAuth`
     }
   }
+}
 
+  @available(iOS 13.0, *)
   func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
     // Handle error.
     print("Sign in with Apple errored: \(error)")

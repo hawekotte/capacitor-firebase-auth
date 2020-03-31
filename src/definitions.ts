@@ -30,13 +30,19 @@ export class FacebookSignInResult {
   }
 }
 
+export class AppleSignInResult {
+  providerId = "apple.com";
+  constructor(public identityToken: string, public nonce: string) {
+  }
+}
+
 export class PhoneSignInResult {
   providerId = firebase.auth.PhoneAuthProvider.PROVIDER_ID;
   constructor(public verificationId: string, public verificationCode: string) {
   }
 }
 
-export type SignInResult = GoogleSignInResult | TwitterSignInResult | FacebookSignInResult | PhoneSignInResult;
+export type SignInResult = GoogleSignInResult | TwitterSignInResult | FacebookSignInResult | AppleSignInResult | PhoneSignInResult;
 
 export interface PhoneSignInOptions {
   phone: string,
