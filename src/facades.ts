@@ -24,6 +24,7 @@ export const cfaSignIn = (providerId: string, data?: SignInOptions): Observable<
 	const googleProvider = new firebase.auth.GoogleAuthProvider().providerId;
 	const facebookProvider = new firebase.auth.FacebookAuthProvider().providerId;
 	const twitterProvider = new firebase.auth.TwitterAuthProvider().providerId;
+	// TODO: Remove comments
 	// TODO: Figure out why this keeps throwing an error!
 	// Use this to get it to run locally until we figure out the `firebase.app()` error
 	// const phoneProvider = "phone";
@@ -59,31 +60,24 @@ export const cfaSignInApple = (): Observable<firebase.User> => {
 			// create the credentials
 			const provider = new firebase.auth.OAuthProvider(providerId);
 
-			// console.log(JSON.stringify(result))
-			// console.log('IDENTITY TOKEN:', result.identityToken)
-			// console.log('NONCE:', result.nonce)
-
 			const credential = provider.credential(
 				result.identityToken,
 				result.nonce
 			);
 
-			console.log("------------------- We can reach here... (but it will fail below locally)")
+			// TODO: Remove comment
+			// console.log("------------------- We can reach here... (but it will fail below locally)")
 
 			// web sign in
 			firebase.app().auth().signInWithCredential(credential)
 				.then((userCredential: firebase.auth.UserCredential) => {
-					alert('SUCCESS')
 					observer.next(userCredential.user);
 					observer.complete();
 				})
 				.catch((reject: any) => {
-					alert('FAIL')
 					observer.error(reject);
 				});
 		}).catch(reject => {
-			alert('FAIL HERE')
-			console.log('ERRRRR:', JSON.stringify(reject))
 			observer.error(reject);
 		});
 	});
