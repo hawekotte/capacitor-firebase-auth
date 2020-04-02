@@ -1,7 +1,8 @@
 package com.baumblatt.capacitor.firebase.auth.handlers;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.baumblatt.capacitor.firebase.auth.CapacitorFirebaseAuth;
@@ -34,6 +35,10 @@ public class GoogleProviderHandler implements ProviderHandler, GoogleApiClient.O
 
     private CapacitorFirebaseAuth plugin;
     private GoogleSignInClient mGoogleSignInClient;
+
+    @Override
+    public void setContext(Context context) {
+    }
 
     @Override
     public void init(CapacitorFirebaseAuth plugin) {

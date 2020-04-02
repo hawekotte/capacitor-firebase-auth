@@ -1,5 +1,6 @@
 package com.baumblatt.capacitor.firebase.auth.handlers;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -29,6 +30,10 @@ public class TwitterProviderHandler implements ProviderHandler {
 
     private CapacitorFirebaseAuth plugin;
     private TwitterLoginButton twitterLoginButton;
+
+    @Override
+    public void setContext(Context context) {
+    }
 
     @Override
     public void init(final CapacitorFirebaseAuth plugin) {

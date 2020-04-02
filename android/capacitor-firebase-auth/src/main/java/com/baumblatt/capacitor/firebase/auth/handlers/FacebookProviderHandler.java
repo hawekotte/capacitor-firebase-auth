@@ -1,5 +1,6 @@
 package com.baumblatt.capacitor.firebase.auth.handlers;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -23,6 +24,10 @@ public class FacebookProviderHandler implements ProviderHandler {
     private CapacitorFirebaseAuth plugin;
     private CallbackManager mCallbackManager;
     private LoginButton loginButton;
+
+    @Override
+    public void setContext(Context context) {
+    }
 
     @Override
     public void init(final CapacitorFirebaseAuth plugin) {

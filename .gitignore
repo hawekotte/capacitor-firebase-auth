@@ -4,6 +4,9 @@ android/capacitor-firebase-auth/build
 android/capacitor-firebase-auth/capacitor-firebase-auth.iml
 ios/Plugin/Pods
 
+# Android gradle
+android/capacitor-firebase-auth/.gradle/
+
 # dependencies
 /node_modules
 

@@ -1,5 +1,6 @@
 package com.baumblatt.capacitor.firebase.auth.handlers;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -25,6 +26,10 @@ public class PhoneProviderHandler implements ProviderHandler {
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     private CapacitorFirebaseAuth plugin;
+
+    @Override
+    public void setContext(Context context) {
+    }
 
     @Override
     public void init(final CapacitorFirebaseAuth plugin) {
